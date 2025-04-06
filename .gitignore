@@ -1,0 +1,28 @@
+# Environment variables and secrets
+.env
+*.env
+
+# Logs
+logs/
+*.log
+
+# Bundler
+.bundle/
+vendor/
+
+# Ruby
+*.gem
+*.rbc
+.ruby-version
+.ruby-gemset
+
+# Editor settings
+.vscode/
+.idea/
+*.swp
+*~
+
+# OS specific files
+.DS_Store
+Thumbs.db
+Gemfile.lock

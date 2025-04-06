@@ -1,0 +1,63 @@
+{
+  "name": "allowed_actions",
+  "description": "Every response must be a JSON object wrapped in ```json ... ``` markdown code blocks, with these fields:\n- `action` (string): One of \"request_file\", \"update_file\", \"run_command\", \"request_input\", or \"issue_resolved\".\n- `details` (object): Specific data for the action (e.g., file paths, content, command, or question).\n- `message` (string): A human-readable explanation of the action or next steps.\n\n**Rules:**\n- Always return exactly one action per response.\n- For `request_file`, you may request multiple files by listing them in `file_paths`.\n- For `update_file`, only one file can be updated per response (use multiple responses if more updates are needed).\n- Use file paths relative to the project root.\n- For `update_file`, provide the complete new file content unless otherwise specified.\n- For `run_command`, assume the script requires user confirmation before execution.\n- After receiving requested data (e.g., file content, command output, user input), it will be provided in the next message.\n- Assume the user’s script automates file operations and command execution, but `request_input` and `issue_resolved` require manual user responses.\n- Keep the process iterative, guiding the user step by step until the issue is resolved or more information is needed.",
+  "input_schema": {
+    "type": "object",
+    "properties": {
+      "action": {
+        "type": "string",
+        "description": "One of \"request_file\", \"update_file\", \"run_command\", \"request_input\", or \"issue_resolved\"",
+        "enum": [
+          "request_file",
+          "update_file",
+          "run_command",
+          "request_input",
+          "issue_resolved"
+        ]
+      },
+      "details": {
+        "type": "object",
+        "description": "**Allowed Actions and Details:**\n1. `request_file`:\n   - `details`: { `file_paths`: [\"<path1>\", \"<path2>\", ...] }\n   - Purpose: Request the content of one or more files (can be multiple).\n2. `update_file`:\n   - `details`: { `file_path`: \"<path>\", `content`: \"<full file content>\" }\n   - Purpose: Suggest replacing a single file’s entire content (only one file per response).\n3. `run_command`:\n   - `details`: { `command`: \"<command>\" }\n   - Purpose: Request running a command (requires user confirmation).\n4. `request_input`:\n   - `details`: { `question`: \"<question for the user>\" }\n   - Purpose: Ask the user for information (e.g., logs, confirmation of behavior).\n5. `issue_resolved`:\n   - `details`: { `solution`: \"<description of the fix>\" }\n   - Purpose: Indicate the problem is solved (user must confirm).",
+        "properties": {
+          "file_paths": {
+            "type": "array",
+            "description": "when action is `request_file`:\n   - [\"<path1>\", \"<path2>\", ...]\n   - Purpose: Request the content of one or more files (can be multiple).",
+            "items": {
+              "type": "string",
+              "description": "file path after resolving alias path too is available"
+            }
+          },
+          "file_path": {
+            "type": "string",
+            "description": "when action is `update_file`:\n   - `file_path`: \"<path>\", `content`: \"<full file content>\"\n   - Purpose: Suggest replacing a single file’s entire content (only one file per response)."
+          },
+          "content": {
+            "type": "string",
+            "description": "when action is `update_file`:\n   - `file_path`: \"<path>\", `content`: \"<full file content>\"\n   - Purpose: Suggest replacing a single file’s entire content (only one file per response)."
+          },
+          "command": {
+            "type": "string",
+            "description": "when action is `run_command`:\n   - Purpose: Request running a command (requires user confirmation)."
+          },
+          "question": {
+            "type": "string",
+            "description": "when action is  `request_input`:\n   - <question for the user>\n   - Purpose: Ask the user for information (e.g., logs, confirmation of behavior)."
+          },
+          "solution": {
+            "type": "string",
+            "description": "`issue_resolved`:\n   - <description of the fix>\n   - Purpose: Indicate the problem is solved (user must confirm)."
+          }
+        },
+        "required": []
+      },
+      "message": {
+        "type": "string",
+        "description": "A human-readable explanation of the action or next steps."
+      }
+    },
+    "required": [
+      "action",
+      "details"
+    ]
+  }
+}
